@@ -10,6 +10,7 @@ import PegawaiPage from '@/components/pegawai/PegawaiPage';
 import LoginPage from '@/components/login/LoginPage';
 import PaymentPage from '@/components/payment/PaymentPage';
 import PPPoEPage from '@/components/pppoe/PPPoEPage';
+import ResellerPage from '@/components/reseller/ResellerPage';
 
 Vue.use(Router);
 
@@ -55,6 +56,12 @@ export const router = new Router({
             path: '/pppoe', 
             name: 'pppoe',
             component: PPPoEPage, 
+            meta: { authorize: [Role.Admin] } 
+        },
+        { 
+            path: '/reseller', 
+            name: 'reseller',
+            component: ResellerPage, 
             meta: { authorize: [Role.Admin] } 
         },
         // otherwise redirect to home

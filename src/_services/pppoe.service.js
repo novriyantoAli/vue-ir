@@ -2,8 +2,9 @@ import { handleResponse, requestOptions } from '@/_helpers';
 
 export const pppoeService = { get };
 
+
 function get(id, limit) {
-    return fetch(`http://localhost:3031/api/pppoe?id=${id}&limit=${limit}`, requestOptions.get())
+    return fetch(`${process.env.VUE_APP_URL}/api/pppoe?id=${id}&limit=${limit}`, requestOptions.get())
         .then(handleResponse);
 }
 

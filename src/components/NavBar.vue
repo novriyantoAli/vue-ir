@@ -37,7 +37,7 @@
             <v-list-item-title>PPPoE</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item  to="/pppoe">
+        <v-list-item  to="/reseller">
           <v-list-item-action>
             <v-icon>mdi-help-circle</v-icon>
           </v-list-item-action>
@@ -45,7 +45,7 @@
             <v-list-item-title>Reseller</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item  to="/pppoe">
+        <v-list-item  to="/">
           <v-list-item-action>
             <v-icon>mdi-help-circle</v-icon>
           </v-list-item-action>
@@ -58,7 +58,7 @@
             <v-icon>mdi-help-circle</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Pembayaran</v-list-item-title>
+            <v-list-item-title>Payment</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         </v-list>
@@ -85,7 +85,7 @@
  
         <v-app-bar app color="blue darken-4" dark>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title>insinyur Radius</v-toolbar-title>
+            <v-toolbar-title>{{ title }}</v-toolbar-title>
             <div class="flex-grow-1"></div>
  
             <v-menu left bottom>
@@ -128,6 +128,7 @@
       data: () => ({
         drawer: null,
         currentUser: null,
+        title: "insinyur radius",
       }),
       methods: {
         signoutButtonPressed() { 
@@ -140,7 +141,6 @@
           const id = this.active[0]
           console.log(id);
           console.log(item);
-
         },
       },
       created () {
@@ -154,7 +154,6 @@
           if (this.currentUser) {
             return this.currentUser.nik;
           }
-
           return "Unknown"
         },
         getRoleActive() {

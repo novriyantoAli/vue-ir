@@ -30,15 +30,15 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6" md="4">
-                    <v-select 
-                     v-model="itemEditedItem.id_pppoe"
+                    <v-autocomplete
+                     v-model="selectedItem"
                      :items="pppoes"
-                     :rules="textNotNullRules"
                      item-text="fullname"
                      item-value="id"
-                     label="Akun PPPoE"
-                     required>    
-                    </v-select>
+                     dense
+                     filled
+                     label="Nama"></v-autocomplete>
+                     
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field
@@ -108,6 +108,7 @@
         ],
         loadingBatch: false,
         items: [],
+
         pppoes: [],
         totalItems: 0,
         options: {},
@@ -117,12 +118,13 @@
         itemForwardID: 0,
         itemEditedIndex: -1,
         itemDialog: false,
+        selectedItem: null,
         itemEditedItem: {
-          id_pppoe: '',
+          id_pppoe: null,
           value: '',
         },
         itemDefaultItem: {
-          id_pppoe: '',
+          id_pppoe: null,
           value: '',
         },
       }),
@@ -150,7 +152,8 @@
           this.items = [];
         },
         saveItem () {
-          paymentService.postPaymentPPPoE(this.itemEditedItem.id_pppoe, this.itemEditedItem.value).then( response => {
+          const vx = this.pppoes.find(o => o.id === this.selectedItem );
+          paymentService.postPaymentPPPoE(this.selectedItem, this.itemEditedItem.value, vx.username, this.expire).then( response => {
             console.log(response.data);
           });
           this.close();

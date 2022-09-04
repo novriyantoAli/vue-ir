@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 
-export function pdf(data) {
+export function pdf(name, data) {
     var doc = new jsPDF('p', 'pt', 'a4');
     //Dimension of A4 in pts: 595 × 842
     var pageWidth = 595;
@@ -70,5 +70,5 @@ export function pdf(data) {
         createCard(data[i]);
     }
     
-    return doc.save('grid.pdf');
+    return doc.save(name+'report.pdf');
 }

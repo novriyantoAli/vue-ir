@@ -169,7 +169,6 @@
           </template>
         </v-expansion-panel-content>
       </v-expansion-panel>
-
       <v-expansion-panel>
         <v-expansion-panel-header>Laporan Bulanan</v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -204,9 +203,9 @@
       </v-expansion-panel>
 
       <v-expansion-panel>
-        <v-expansion-panel-header>Panel 3</v-expansion-panel-header>
+        <v-expansion-panel-header>Authentication Report</v-expansion-panel-header>
         <v-expansion-panel-content>
-          Some content
+          <AuthenticationReport/>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -215,7 +214,7 @@
 <script>
   import { voucherService, promoService, packageService } from '@/_services';
   import { pdf } from '@/_helpers';
-
+  import AuthenticationReport from "@/components/voucher/AuthenticationReport.vue";
   export default {
       props: {
         source: String,
@@ -309,7 +308,7 @@
           voucherService.generateBatch(this.voucherEditedItem.promo, this.voucherEditedItem.package, this.voucherEditedItem.howmany).then(
             response => {
               console.log(response);
-              pdf(response);
+              pdf('voucher', response);
           }, error => { console.log(error) });
           this.close();
         },
@@ -333,7 +332,7 @@
         },
         searchPrint() {
           voucherService.getBatchPrint(this.batchCode).then(response => {
-            pdf(response);
+            pdf('voucher', response);
           }, error => { console.log(error) })
         },
         // //
@@ -435,6 +434,9 @@
           },
           deep: true
         }
-      }
+      },
+    components: {
+      AuthenticationReport,
+    },
   };
 </script>

@@ -30,31 +30,49 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6" md="4">
-                    <v-select 
-                      v-model="itemEditedItem.package"
-                      :items="packages"
-                      :rules="textNotNullRules"
-                      item-text="name"
-                      item-value="id"
-                      label="Paket"
-                      required>    
-                    </v-select>
+                    <v-text-field
+                      v-model="itemEditedItem.fullname"
+                      label="Nama Lengkap"
+                      type="text">
+                    </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-select 
-                     v-model="itemEditedItem.promo"
-                     :items="promos"
+                     v-model="itemEditedItem.profile"
+                     :items="profile"
                      :rules="textNotNullRules"
-                     item-text="promo_name"
-                     item-value="id"
-                     label="Promo"
+                     item-text="profile"
+                     item-value="username"
+                     label="Profile"
                      required>    
                     </v-select>
                   </v-col>
+
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field
-                      v-model="itemEditedItem.howmany"
-                      label="Berapa banyak"
+                      v-model="itemEditedItem.username"
+                      label="Username"
+                      type="text">
+                    </v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="itemEditedItem.password"
+                      label="Password"
+                      type="text">
+                    </v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="itemEditedItem.profile"
+                      label="Profile"
+                      type="text">
+                    </v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="itemEditedItem.bill"
+                      label="Tagihan"
                       type="number">
                     </v-text-field>
                   </v-col>
@@ -129,6 +147,7 @@
         ],
         loadingBatch: false,
         items: [],
+        profile: [],
         totalItems: 0,
         options: {},
         pageNow: 0,
@@ -138,14 +157,18 @@
         itemEditedIndex: -1,
         itemDialog: false,
         itemEditedItem: {
-          promo: '',
-          package: '',
-          howmany: "1",
+          fullname: '',
+          profile: '',
+          username: '',
+          password: '',
+          bill: "0",
         },
         itemDefaultItem: {
-          promo: '',
-          package: '',
-          howmany: "1",
+          fullname: '',
+          profile: '',
+          username: '',
+          password: '',
+          bill: "0",
         },
       }),
       mounted () {
@@ -159,14 +182,9 @@
          })
       },
       methods: {
-        saveToLocal () {
-          // voucherService.saveDataKontakDarurat(this.voucher);
-        },
-
         save(date) {
           this.$refs.menu.save(date)
         },
-        // DATA KELUARGA TABLE OPERATION
         initialize () {
           this.items = [];
         },
@@ -196,11 +214,6 @@
             this.itemEditedIndex = -1
           })
         },
-        searchPrint() {
-          // voucherService.getBatchPrint(this.batchCode).then(response => {
-          //   pdf(response);
-          // }, error => { console.log(error) })
-        },
         // //
         getDataFromApi(){
           return new Promise((resolve, reject) => {
@@ -213,28 +226,7 @@
 
             
             this.getDesserts(page, itemsPerPage).then(function(items){
-              // if (sortBy) {
-              //   items.data = items.data.sort((a, b) => {
-              //     const sortA = a[sortBy]
-              //     const sortB = b[sortBy]
-
-              //     if (sortDesc) {
-              //       if (sortA < sortB) return 1
-              //       if (sortA > sortB) return -1
-              //       return 0
-              //     } else {
-              //       if (sortA < sortB) return -1
-              //       if (sortA > sortB) return 1
-              //       return 0
-              //     }
-              //   })
-              // }
-
-              // if (itemsPerPage > 0) {
-              //   items.data = items.data.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-              // }
               console.log(reject);
-
               setTimeout(() => { resolve({ items }) }, 1000)
             })
           })

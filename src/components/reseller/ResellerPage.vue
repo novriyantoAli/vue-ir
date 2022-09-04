@@ -1,82 +1,12 @@
 <template>
   <v-data-table
     :headers="headersReseller"
-    :items="reseller"
+    :items="resellers"
     :options.sync="options"
     :server-items-length="totalResellers"
-    sort-by="reseller"
+    sort-by="name"
     class="elevation-1">
     <template v-slot:top>
-      <template>
-        <v-form>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-overflow-btn
-                 filled
-                 :items="batch"
-                 item-text="batch_name"
-                 item-value="batch_name"
-                 v-model="batchCode">
-                  <template v-slot:prepend>
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon v-on="on">
-                          mdi-help-circle-outline
-                        </v-icon>
-                      </template>
-                      silahkan pilih salah satu kode batch
-                    </v-tooltip>
-                  </template>
-                  <template v-slot:append>
-                    <v-fade-transition leave-absolute>
-                      <v-progress-circular
-                       v-if="loadingBatch"
-                       size="24"
-                       color="info"
-                       indeterminate>
-                      </v-progress-circular>
-                      <img
-                       v-else
-                       width="24"
-                       height="24"
-                       src="https://cdn.vuetifyjs.com/images/logos/v-alt.svg"
-                       alt="">
-                    </v-fade-transition>
-                  </template>
-                  <template v-slot:append-outer>
-                    <v-menu
-                     style="top: -12px"
-                     offset-y>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                        color="success"
-                         v-bind="attrs"
-                         v-on="on">
-                          <v-icon left>mdi-menu</v-icon>
-                          Batch Menu
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-text class="pa-6">
-                          <v-btn
-                           large
-                           text
-                           color="primary"
-                           @click="searchPrint"
-                           :disabled="batchCode==''">
-                            <v-icon left>mdi-pencil</v-icon>Cetak
-                          </v-btn>
-                        </v-card-text>
-                      </v-card>
-                    </v-menu>
-                  </template>
-                </v-overflow-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-form>
-      </template>
       <v-toolbar flat>
         <v-toolbar-title>RESELLER</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
@@ -88,7 +18,7 @@
                color="primary"
                class="mr-2"
                v-bind="attrs" v-on="on">
-                Buat Batch
+                Buat Baru
               </v-btn>
             </div>
           </template>
@@ -100,32 +30,24 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6" md="4">
-                    <v-select 
-                      v-model="resellerEditedItem.package"
-                      :items="packages"
-                      :rules="textNotNullRules"
-                      item-text="name"
-                      item-value="id"
-                      label="Paket"
-                      required>    
-                    </v-select>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-select 
-                     v-model="resellerEditedItem.promo"
-                     :items="promos"
-                     :rules="textNotNullRules"
-                     item-text="promo_name"
-                     item-value="id"
-                     label="Promo"
-                     required>    
-                    </v-select>
+                    <v-text-field
+                      v-model="resellerEditedItem.name"
+                      label="Nama"
+                      type="text">
+                    </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field
-                      v-model="resellerEditedItem.howmany"
-                      label="Berapa banyak"
-                      type="number">
+                      v-model="resellerEditedItem.phone"
+                      label="No. HP"
+                      type="text">
+                    </v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="resellerEditedItem.information"
+                      label="Informasi"
+                      type="text">
                     </v-text-field>
                   </v-col>
                 </v-row>
@@ -159,7 +81,6 @@
 </template>
 <script>
   import { resellerService } from '@/_services';
-  import { pdf } from '@/_helpers';
 
   export default {
       props: {
@@ -173,121 +94,77 @@
         // DATA KONTAK DARURAT
         headersReseller: [
         {
-          text: 'Voucher',
+          text: 'Nama',
           align: 'start',
           sortable: false,
-          value: 'username',
+          value: 'name',
         },
-        { text: 'Profile', value: 'profile', sortable: false, },
-        { text: 'Kode Batch', value: 'batch_code', sortable: false, },
-        { text: 'Tanggal Cetak', value: 'print_date', sortable: false, },
-        { text: 'Kadarluarsa', value: 'value', sortable: false, },
-        { text: 'Berlaku', value: 'active', sortable: false, },
+        { text: 'Nomor HP', value: 'phone', sortable: false, },
+        { text: 'Informasi', value: 'information', sortable: false, },
+        { text: 'Tanggal dibuat', value: 'created_at', sortable: false, },
         ],
         loadingBatch: false,
-        voucher: [],
-        promos: [],
-        packages: [],
-        batch: [],
-        batchCode: '',
-        totalVouchers: 0,
+        resellers: [],
+        totalResellers: 0,
         options: {},
         pageNow: 0,
-        voucherLastID: 0,
-        voucherNextID: 0,
-        voucherForwardID: 0,
-        voucherEditedIndex: -1,
-        voucherDialog: false,
-        voucherEditedItem: {
-          promo: '',
-          package: '',
-          howmany: "1",
+        resellerLastID: 0,
+        resellerNextID: 0,
+        resellerForwardID: 0,
+        resellerEditedIndex: -1,
+        resellerDialog: false,
+        resellerEditedItem: {
+          name: '',
+          phone: '',
+          information: '',
         },
-        voucherDefaultItem: {
-          promo: '',
-          package: '',
-          howmany: "1",
+        resellerDefaultItem: {
+          name: '',
+          phone: '',
+          information: '',
         },
       }),
       mounted () {
          this.getDataFromApi().then(data => {
-            this.voucher = data.items.data;
+            this.resellers = data.items.data;
             if (Array.isArray(data.items.data) && data.items.data.length > 0) {
-              this.voucherForwardID = data.items.data[0].id;
-              this.voucherNextID = data.items.data[data.items.data.length-1].id
+              this.resellerForwardID = data.items.data[0].id;
+              this.resellerNextID = data.items.data[data.items.data.length-1].id
             }
-            this.totalVouchers = data.items.total_page;
+            this.totalResellers = data.items.total_page;
          })
-         this.getBatchDataFromAPI();
-
-         this.getPromoDataFromAPI();
-
-         this.getPackageDataFromAPI();
       },
       methods: {
-        saveToLocal () {
-          // voucherService.saveDataKontakDarurat(this.voucher);
-        },
-
         save(date) {
           this.$refs.menu.save(date)
         },
         // DATA KELUARGA TABLE OPERATION
         initialize () {
-          this.voucher = [];
+          this.resellers = [];
         },
         saveItem () {
-          voucherService.generateBatch(this.voucherEditedItem.promo, this.voucherEditedItem.package, this.voucherEditedItem.howmany).then(
+          resellerService.save(this.resellerEditedItem.name, this.resellerEditedItem.phone, this.resellerEditedItem.information).then(
             response => {
               console.log(response);
-              pdf(response);
           }, error => { console.log(error) });
           this.close();
         },
         editItem (item) {
-          this.voucherEditedIndex = this.voucher.indexOf(item)
-          this.voucherEditedItem = Object.assign({}, item)
-          this.voucherDialog = true
+          this.resellerEditedIndex = this.reseller.indexOf(item)
+          this.resellerEditedItem = Object.assign({}, item)
+          this.resellerDialog = true
         },
         close () {
-          this.voucherDialog = false
+          this.resellerDialog = false
           this.$nextTick(() => {
-            this.voucherEditedItem = Object.assign({}, this.voucherDefaultItem)
-            this.voucherEditedIndex = -1
+            this.resellerEditedItem = Object.assign({}, this.resellerDefaultItem)
+            this.resellerEditedIndex = -1
           })
         },
         closeDelete () {
           this.$nextTick(() => {
-            this.voucherEditedItem = Object.assign({}, this.voucherDefaultItem)
-            this.voucherEditedIndex = -1
-          })
-        },
-        searchPrint() {
-          voucherService.getBatchPrint(this.batchCode).then(response => {
-            pdf(response);
-          }, error => { console.log(error) })
-        },
-        // //
-        getBatchDataFromAPI() {
-          this.loadingBatch = true;
-          return voucherService.getBatch().then(response => {
-            this.loadingBatch = false;
-            this.batch = response;
-          }, error => {
-            console.log(error);
-            this.loadingBatch = false;
-          });
-        },
-        getPromoDataFromAPI(){
-          return promoService.get(0, 999).then( response => {
-            console.log(response.data);
-            this.promos = response.data;
-          });
-        },
-        getPackageDataFromAPI(){
-          return packageService.get(0, 999).then( response => {
-            console.log(response.data);
-            this.packages = response.data;
+            this.resellerEditedItem = Object.assign({}, this.resellerDefaultItem)
+            this.resellerEditedIndex = -1
           })
         },
         getDataFromApi(){
@@ -299,30 +176,8 @@
             console.log("page: "+page);
             console.log("itemsPerPage: "+itemsPerPage);
 
-            
             this.getDesserts(page, itemsPerPage).then(function(items){
-              // if (sortBy) {
-              //   items.data = items.data.sort((a, b) => {
-              //     const sortA = a[sortBy]
-              //     const sortB = b[sortBy]
-
-              //     if (sortDesc) {
-              //       if (sortA < sortB) return 1
-              //       if (sortA > sortB) return -1
-              //       return 0
-              //     } else {
-              //       if (sortA < sortB) return -1
-              //       if (sortA > sortB) return 1
-              //       return 0
-              //     }
-              //   })
-              // }
-
-              // if (itemsPerPage > 0) {
-              //   items.data = items.data.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-              // }
               console.log(reject);
-
               setTimeout(() => { resolve({ items }) }, 1000)
             })
           })
@@ -331,21 +186,21 @@
         getDesserts(pageRequest, page) {
           var sentID = 0;
           if (this.pageNow > pageRequest) {
-            sentID = this.voucherForwardID;
+            sentID = this.resellerForwardID;
           } else if (this.pageNow < pageRequest) {
-            sentID = this.voucherNextID;
+            sentID = this.resellerNextID;
           } 
 
           this.pageNow = pageRequest;
           // jika page telah bertambah
-           return voucherService.get(sentID, page).then(response => {
+           return resellerService.get(sentID, page).then(response => {
              return response
            }, error => { console.log(error) })
          }
       },
       computed: { 
         formTitle () {
-          return this.voucherEditedIndex === -1 ? 'New Item' : 'Edit Item'
+          return this.resellerEditedIndex === -1 ? 'New Item' : 'Edit Item'
         },
       },
 
@@ -356,12 +211,12 @@
         options: {
           handler(){
             this.getDataFromApi().then(data => {
-              this.voucher = data.items.data
+              this.resellers = data.items.data
 
               if (Array.isArray(data.items.data) && data.items.data.length > 0) {
-                this.voucherNextID = data.items.data[data.items.data.length-1].id
+                this.resellerNextID = data.items.data[data.items.data.length-1].id
               }
-              this.totalVouchers = data.items.total_page
+              this.totalResellers = data.items.total_page
             })
           },
           deep: true

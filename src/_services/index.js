@@ -8,3 +8,4 @@ export * from './promo.service';
 export * from './package.service';
 export * from './payment.service';
 export * from './pppoe.service';
+export * from './reseller.service';

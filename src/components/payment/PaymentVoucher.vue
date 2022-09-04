@@ -1,94 +1,102 @@
 <template>
-            <v-data-table
-            :headers="headersVoucher"
-            :items="voucher"
-            :options.sync="options"
-            :server-items-length="totalVouchers"
-            sort-by="voucher"
-            class="elevation-1">
-              <template v-slot:top>
-                <v-toolbar flat>
-                  <v-toolbar-title>Pembayaran PPPoE</v-toolbar-title>
-                  <v-divider class="mx-4" inset vertical></v-divider>
-                  <v-spacer></v-spacer>
-                  <v-dialog v-model="voucherDialog" max-width="700px">
-                    <template v-slot:activator="{ on, attrs }">
-                      <div class="text-center pt-4">
-                        <v-btn 
-                        color="primary"
-                        class="mr-2"
-                        v-bind="attrs" v-on="on">Buat Pembayaran
-                        </v-btn>
-                      </div>
-                    </template>
-                    <v-card>
-                      <v-card-title>
-                        <span class="headline">{{ formTitle }}</span>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-container>
-                          <v-row>
-                            <v-col cols="12" sm="6" md="4">
-                              <v-select 
-                              v-model="voucherEditedItem.package"
-                              :items="packages"
-                              :rules="textNotNullRules"
-                              item-text="name"
-                              item-value="id"
-                              label="Paket"
-                              required>    
-                              </v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="4">
-                              <v-select 
-                              v-model="voucherEditedItem.promo"
-                              :items="promos"
-                              :rules="textNotNullRules"
-                              item-text="promo_name"
-                              item-value="id"
-                              label="Promo"
-                              required>    
-                              </v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="4">
-                              <v-text-field
-                              v-model="voucherEditedItem.howmany"
-                              label="Berapa banyak"
-                              type="number">
-                              </v-text-field>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="close">
-                          Batal
-                        </v-btn>
-                        <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="saveItem">
-                          SIMPAN
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                </v-toolbar>
-              </template>
-              <template v-slot:no-data>
-                <v-btn color="primary" @click="initialize">
-                  Reset
-                </v-btn>
-              </template>
-            </v-data-table>
+  <v-data-table
+   :headers="headers"
+   :items="items"
+   :options.sync="options"
+   :server-items-length="totalItems"
+   sort-by="id_batch"
+   class="elevation-1">
+    <template v-slot:top>
+      <v-toolbar flat>
+      <v-toolbar-title>Pembayaran Voucher</v-toolbar-title>
+      <v-divider class="mx-4" inset vertical></v-divider>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="itemDialog" max-width="700px">
+        <template v-slot:activator="{ on, attrs }">
+          <div class="text-center pt-4">
+            <v-btn 
+             color="primary"
+             class="mr-2"
+             v-bind="attrs" v-on="on">Buat Pembayaran
+            </v-btn>
+          </div>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ formTitle }}</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-select 
+                   v-model="itemEditedItem.batch"
+                   :items="batch"
+                   :rules="textNotNullRules"
+                   item-text="batch_code"
+                   item-value="batch_code"
+                   label="Batch"
+                    @change="changeTransaction"
+                   required>    
+                  </v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                   v-model="itemEditedItem.value"
+                   label="Rp"
+                   type="number">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                   v-model="itemEditedItem.bill_batch"
+                   :readonly="selected === 'yes'"
+                   label="Tagihan"
+                   disabled></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                   v-model="itemEditedItem.created_at"
+                   :readonly="selected === 'yes'"
+                   label="Tanggal Transaksi"
+                   disabled></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                   v-model="itemEditedItem.total_batch"
+                   :readonly="selected === 'yes'"
+                   label="Total Batch"
+                   disabled></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+             color="blue darken-1"
+             text
+             @click="close">
+              BATAL
+            </v-btn>
+            <v-btn
+             color="blue darken-1"
+             text
+             @click="saveItem">
+              SIMPAN
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-toolbar>
+  </template>
+    <template v-slot:no-data>
+      <v-btn color="primary" @click="initialize">Reset</v-btn>
+    </template>
+  </v-data-table>
 </template>
 <script>
-  import { voucherService, promoService, packageService } from '@/_services';
-  import { pdf } from '@/_helpers';
+  import { paymentService } from '@/_services';
 
   export default {
       props: {
@@ -99,121 +107,117 @@
           (v) => !!v || "Data isian tidak valid",
         ],
         menu: false,
-        value: [
-        423,
-        446,
-        675,
-        510,
-        590,
-        610,
-        760,
-        313,
-        213,
-        578,
-        900,
-        231,
-        103,
-      ],
-        headersVoucher: [
+        
+        headers: [
         {
-          text: 'Voucher',
+          text: 'Batch',
           align: 'start',
           sortable: false,
-          value: 'username',
+          value: 'id_batch',
         },
-        { text: 'Profile', value: 'profile', sortable: false, },
-        { text: 'Kode Batch', value: 'batch_code', sortable: false, },
-        { text: 'Tanggal Cetak', value: 'print_date', sortable: false, },
-        { text: 'Kadarluarsa', value: 'value', sortable: false, },
-        { text: 'Berlaku', value: 'active', sortable: false, },
+        { text: 'Total Voucher', value: 'total_voucher', sortable: false, },
+        { text: 'Rp', value: 'value', sortable: false, },
+        { text: 'Tanggal Dibuat', value: 'created_at', sortable: false, },
         ],
         loadingBatch: false,
-        voucher: [],
-        promos: [],
-        packages: [],
+        selected: false,
+        items: [],
         batch: [],
-        batchCode: '',
-        totalVouchers: 0,
+        totalItems: 0,
         options: {},
         pageNow: 0,
-        voucherLastID: 0,
-        voucherNextID: 0,
-        voucherForwardID: 0,
-        voucherEditedIndex: -1,
-        voucherDialog: false,
-        voucherEditedItem: {
-          promo: '',
-          package: '',
-          howmany: "1",
+        itemLastID: 0,
+        itemNextID: 0,
+        itemForwardID: 0,
+        itemEditedIndex: -1,
+        itemDialog: false,
+        itemEditedItem: {
+          batch: '',
+          value: "0",
+          created_at: '',
+          bill_batch: '',
+          total_batch: '',
         },
-        voucherDefaultItem: {
-          promo: '',
-          package: '',
-          howmany: "1",
+        itemDefaultItem: {
+          batch: '',
+          value: "0",
+          created_at: '',
+          bill_batch: '',
+          total_batch: '',
         },
       }),
       mounted () {
          this.getDataFromApi().then(data => {
-            this.voucher = data.items.data;
+            this.items = data.items.data;
             if (Array.isArray(data.items.data) && data.items.data.length > 0) {
-              this.voucherForwardID = data.items.data[0].id;
-              this.voucherNextID = data.items.data[data.items.data.length-1].id
+              this.itemForwardID = data.items.data[0].id;
+              this.itemNextID = data.items.data[data.items.data.length-1].id
             }
-            this.totalVouchers = data.items.total_page;
+            this.totalItems = data.items.total_page;
          })
-         this.getBatchDataFromAPI();
-
-         this.getPromoDataFromAPI();
-
-         this.getPackageDataFromAPI();
+         this.getUnpaidVoucherFromAPI();
       },
       methods: {
-        saveToLocal () {
-          // voucherService.saveDataKontakDarurat(this.voucher);
+        refreshData() {
+          this.getDataFromApi().then(data => {
+            this.items = data.items.data;
+            if (Array.isArray(data.items.data) && data.items.data.length > 0) {
+              this.itemForwardID = data.items.data[0].id;
+              this.itemNextID = data.items.data[data.items.data.length-1].id
+            }
+            this.totalItems = data.items.total_page;
+          })
+          
+          this.getUnpaidVoucherFromAPI();
         },
-
         save(date) {
           this.$refs.menu.save(date)
         },
-        // DATA KELUARGA TABLE OPERATION
         initialize () {
-          this.voucher = [];
+          this.items = [];
         },
         saveItem () {
-          voucherService.generateBatch(this.voucherEditedItem.promo, this.voucherEditedItem.package, this.voucherEditedItem.howmany).then(
+          paymentService.postPaymentVoucher(this.itemEditedItem.batch, this.itemEditedItem.value).then(
             response => {
+              // should be show message 
               console.log(response);
-              pdf(response);
+              this.refreshData();
           }, error => { console.log(error) });
+          
           this.close();
         },
         editItem (item) {
-          this.voucherEditedIndex = this.voucher.indexOf(item)
-          this.voucherEditedItem = Object.assign({}, item)
-          this.voucherDialog = true
+          this.itemEditedIndex = this.items.indexOf(item)
+          this.itemEditedItem = Object.assign({}, item)
+          this.itemDialog = true
         },
         close () {
-          this.voucherDialog = false
+          this.itemDialog = false
           this.$nextTick(() => {
-            this.voucherEditedItem = Object.assign({}, this.voucherDefaultItem)
-            this.voucherEditedIndex = -1
+            this.itemEditedItem = Object.assign({}, this.itemDefaultItem)
+            this.itemEditedIndex = -1
           })
         },
         closeDelete () {
           this.$nextTick(() => {
-            this.voucherEditedItem = Object.assign({}, this.voucherDefaultItem)
-            this.voucherEditedIndex = -1
+            this.itemEditedItem = Object.assign({}, this.itemDefaultItem)
+            this.itemEditedIndex = -1
           })
         },
-        searchPrint() {
-          voucherService.getBatchPrint(this.batchCode).then(response => {
-            pdf(response);
-          }, error => { console.log(error) })
-        },
         // //
-        getBatchDataFromAPI() {
+        changeTransaction() {
+          this.selected = false;
+
+          const x = this.batch.find(element => element.batch_code == this.itemEditedItem.batch)
+          this.itemEditedItem.bill_batch = x.bill_batch;
+          this.itemEditedItem.created_at = x.print_date;
+          this.itemEditedItem.total_batch = x.total_batch;
+
+          this.selected = true;
+        },
+        getUnpaidVoucherFromAPI() {
           this.loadingBatch = true;
-          return voucherService.getBatch().then(response => {
+          return paymentService.getPendingPaymentVoucher().then(response => {
             this.loadingBatch = false;
             this.batch = response;
           }, error => {
@@ -221,18 +225,7 @@
             this.loadingBatch = false;
           });
         },
-        getPromoDataFromAPI(){
-          return promoService.get(0, 999).then( response => {
-            console.log(response.data);
-            this.promos = response.data;
-          });
-        },
-        getPackageDataFromAPI(){
-          return packageService.get(0, 999).then( response => {
-            console.log(response.data);
-            this.packages = response.data;
-          })
-        },
+
         getDataFromApi(){
           return new Promise((resolve, reject) => {
             const { sortBy, sortDesc, page, itemsPerPage  } = this.options
@@ -242,30 +235,8 @@
             console.log("page: "+page);
             console.log("itemsPerPage: "+itemsPerPage);
 
-            
             this.getDesserts(page, itemsPerPage).then(function(items){
-              // if (sortBy) {
-              //   items.data = items.data.sort((a, b) => {
-              //     const sortA = a[sortBy]
-              //     const sortB = b[sortBy]
-
-              //     if (sortDesc) {
-              //       if (sortA < sortB) return 1
-              //       if (sortA > sortB) return -1
-              //       return 0
-              //     } else {
-              //       if (sortA < sortB) return -1
-              //       if (sortA > sortB) return 1
-              //       return 0
-              //     }
-              //   })
-              // }
-
-              // if (itemsPerPage > 0) {
-              //   items.data = items.data.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-              // }
               console.log(reject);
-
               setTimeout(() => { resolve({ items }) }, 1000)
             })
           })
@@ -274,21 +245,20 @@
         getDesserts(pageRequest, page) {
           var sentID = 0;
           if (this.pageNow > pageRequest) {
-            sentID = this.voucherForwardID;
+            sentID = this.itemForwardID;
           } else if (this.pageNow < pageRequest) {
-            sentID = this.voucherNextID;
+            sentID = this.itemNextID;
           } 
 
           this.pageNow = pageRequest;
-          // jika page telah bertambah
-           return voucherService.get(sentID, page).then(response => {
+           return paymentService.getPaymentVoucher(sentID, page).then(response => {
              return response
            }, error => { console.log(error) })
          }
       },
       computed: { 
         formTitle () {
-          return this.voucherEditedIndex === -1 ? 'New Item' : 'Edit Item'
+          return this.itemEditedIndex === -1 ? 'New Item' : 'Edit Item'
         },
       },
 
@@ -299,12 +269,12 @@
         options: {
           handler(){
             this.getDataFromApi().then(data => {
-              this.voucher = data.items.data
+              this.items = data.items.data
 
               if (Array.isArray(data.items.data) && data.items.data.length > 0) {
-                this.voucherNextID = data.items.data[data.items.data.length-1].id
+                this.itemNextID = data.items.data[data.items.data.length-1].id
               }
-              this.totalVouchers = data.items.total_page
+              this.totalItems = data.items.total_page
             })
           },
           deep: true

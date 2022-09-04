@@ -12,7 +12,7 @@ export const authenticationService = {
 };
 
 function login(username, password) {
-    return fetch(`http://localhost:3031/api/login`, requestOptions.post({ username, password }))
+    return fetch(`${process.env.VUE_APP_URL}/api/login`, requestOptions.post({ username, password }))
         .then(handleResponse)
         .then(user => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes

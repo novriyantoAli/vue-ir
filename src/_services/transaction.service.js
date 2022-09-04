@@ -34,13 +34,16 @@ export const pegawaiService = {
     get currentDataPegawaiValue () { return currentDataPegawaiSubject.value },
 };
 
+// const local = 'localhost'
+const local = '7.11.92.2'
+
 function getAll() {
-    return fetch(`http://localhost:3000/api/pegawai`, requestOptions.get())
+    return fetch(`http://${local}:3000/api/pegawai`, requestOptions.get())
         .then(handleResponse);
 }
 
 function getByNIK(nik) {
-    return fetch(`http://localhost:3000/api/pegawai?nik=${nik}`, requestOptions.get())
+    return fetch(`http://${local}:3000/api/pegawai?nik=${nik}`, requestOptions.get())
         .then(handleResponse); 
 }
 
